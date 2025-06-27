@@ -11,6 +11,7 @@ execute:
  library(primer.data)
  library(tidymodels)
  library(broom)
+ library(gt)
 ```
 
 ```{r}
@@ -24,23 +25,29 @@ x <- nhanes |>
 ```
 
 ```{r}
- #| cache: true
+# Fit a simple linear model predicting height by sex
+model <- lm(height ~ sex, data = x)
 ```
-$$
-Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \cdots + \beta_k X_{ki} + \varepsilon_i
-$$
 
-$$
-\hat{Y}_i = 2.50 + 0.75 X_{1i} - 0.30 X_{2i} + 1.20 X_{3i}
-$$
+```{r}
+# Tidy the model and make a nice table
+model %>% 
+  tidy(conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high) %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  gt() %>%
+  tab_header(
+    title = "Estimated Difference in Height by Sex",
+    subtitle = "Linear model estimates with 95% confidence intervals"
+  ) %>%
+  cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    conf.low = "Lower 95% CI",
+    conf.high = "Upper 95% CI"
+  ) %>%
+  tab_source_note("Source: NHANES sample data")
 
-This topic is about the population, a survey between males and females, and their body, race, height etc. The data source is NHANES, and we want to answer the question of how do other variables affect height? However, our estimates may be biased if the sample does not fully represent all age groups or if changes in height over time are not accounted for.
+```
 
-
-
-
-
-
-
-
-
+This topic is about the population, a survey between males and females, and their body, race, height etc. The data source is NHANES, and we want to answer the question of how do other variables affect height? However, our estimates may be biased if the sample does not fully represent all age groups or if changes in height over time are not accounted for.We model adult height as a linear function of sex to estimate how average height differs between men and women.
