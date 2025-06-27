@@ -1,5 +1,26 @@
 ---
 title: "Two-Parameters"
 format: html
+execute: 
+  echo: false
 ---
 
+```{r}
+#| message: false
+ library(tidyverse)
+ library(primer.data)
+```
+
+```{r}
+set.seed(10)
+
+x <- nhanes |> 
+  filter(age >= 18) |> 
+  select(height, sex) |> 
+  drop_na() |> 
+  slice_sample(n = 50, by = sex)
+```
+
+
+
+This topic is about the population, a survey between males and females, and their body, race, height etc. The data source is NHANES, and we want to answer the question of how do other variables affect height?
